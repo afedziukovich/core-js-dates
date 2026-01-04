@@ -50,7 +50,15 @@ function getTime(date) {
  * '2024-01-30T00:00:00.000Z' => 'Tuesday'
  */
 function getDayName(date) {
-  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const days = [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+  ];
   const dateObj = new Date(date);
   const dayIndex = dateObj.getUTCDay();
   return days[dayIndex];
@@ -160,8 +168,8 @@ function formatDate(date) {
   const minutes = String(dateObj.getUTCMinutes()).padStart(2, '0');
   const seconds = String(dateObj.getUTCSeconds()).padStart(2, '0');
   const ampm = hours >= 12 ? 'PM' : 'AM';
-  hours = hours % 12;
-  hours = hours ? hours : 12;
+  hours %= 12;
+  hours = hours || 12;
   return `${month}/${day}/${year}, ${hours}:${minutes}:${seconds} ${ampm}`;
 }
 
@@ -204,10 +212,12 @@ function getCountWeekendsInMonth(month, year) {
  * Date(2024, 1, 23) => 8
  */
 function getWeekNumberByDate(date) {
-  const target = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const target = new Date(
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
+  );
   target.setUTCDate(target.getUTCDate() + 4 - (target.getUTCDay() || 7));
   const yearStart = new Date(Date.UTC(target.getUTCFullYear(), 0, 1));
-  const weekNumber = Math.ceil((((target - yearStart) / 86400000) + 1) / 7);
+  const weekNumber = Math.ceil(((target - yearStart) / 86400000 + 1) / 7);
   return weekNumber;
 }
 
