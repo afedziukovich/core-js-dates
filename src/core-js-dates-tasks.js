@@ -96,9 +96,7 @@ function getNextFriday(date) {
  * 2, 2024 => 29
  */
 function getCountDaysInMonth(month, year) {
-  const nextMonth = new Date(year, month, 1);
-  const lastDay = new Date(nextMonth - 1);
-  return lastDay.getDate();
+  return new Date(year, month, 0).getDate();
 }
 
 /**
@@ -185,11 +183,11 @@ function formatDate(date) {
 function getCountWeekendsInMonth(month, year) {
   let count = 0;
   const daysInMonth = new Date(year, month, 0).getDate();
-  for (let day = 1; day <= daysInMonth; day++) {
+  for (let day = 1; day <= daysInMonth; day += 1) {
     const date = new Date(year, month - 1, day);
     const dayOfWeek = date.getDay();
     if (dayOfWeek === 0 || dayOfWeek === 6) {
-      count++;
+      count += 1;
     }
   }
   return count;
@@ -209,13 +207,10 @@ function getCountWeekendsInMonth(month, year) {
  * Date(2024, 1, 23) => 8
  */
 function getWeekNumberByDate(date) {
-  const target = new Date(date.valueOf());
-  const dayNum = (target.getDay() + 6) % 7;
-  target.setDate(target.getDate() - dayNum + 3);
-  const firstThursday = new Date(target.getFullYear(), 0, 4);
-  firstThursday.setDate(firstThursday.getDate() - ((firstThursday.getDay() + 6) % 7) + 3);
-  const diff = target - firstThursday;
-  const weekNumber = 1 + Math.round(diff / (7 * 24 * 60 * 60 * 1000));
+  const target = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  target.setUTCDate(target.getUTCDate() + 4 - (target.getUTCDay() || 7));
+  const yearStart = new Date(Date.UTC(target.getUTCFullYear(), 0, 1));
+  const weekNumber = Math.ceil((((target - yearStart) / 86400000) + 1) / 7);
   return weekNumber;
 }
 
@@ -235,13 +230,13 @@ function getNextFridayThe13th(date) {
   result.setDate(13);
   if (result.getTime() <= date.getTime()) {
     result.setMonth(result.getMonth() + 1);
+    result.setDate(13);
   }
-  let month = result.getMonth();
-  const year = result.getFullYear();
-  while (new Date(year, month, 13).getDay() !== 5) {
-    month = (month + 1) % 12;
+  while (result.getDay() !== 5) {
+    result.setMonth(result.getMonth() + 1);
+    result.setDate(13);
   }
-  return new Date(year, month, 13);
+  return result;
 }
 
 /**
@@ -255,8 +250,9 @@ function getNextFridayThe13th(date) {
  * Date(2024, 5, 1) => 2
  * Date(2024, 10, 10) => 4
  */
-function getQuarter(/* date */) {
-  throw new Error('Not implemented');
+function getQuarter(date) {
+  const month = date.getMonth();
+  return Math.floor(month / 3) + 1;
 }
 
 /**
