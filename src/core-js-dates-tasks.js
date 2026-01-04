@@ -71,7 +71,6 @@ function getNextFriday(date) {
   const result = new Date(date);
   const currentDay = result.getUTCDay();
   let daysToAdd;
-
   if (currentDay === 5) {
     daysToAdd = 7;
   } else if (currentDay < 5) {
